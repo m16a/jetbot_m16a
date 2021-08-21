@@ -5,13 +5,13 @@ from sensor_msgs.msg import Joy
 
 cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
 
-MAX_VEL_FWD = 1
+max_vel_fwd = 1
 
 def callback(msg):
     move = Twist()
     if msg.axes[1] > 0.2:
         print ("forward")
-        move.linear.x = msg.axes[1] * MAX_VEL_FWD
+        move.linear.x = msg.axes[1] * max_vel_fwd 
     elif msg.axes[1] < -0.2:
         print ("backward")
         move.linear.x = -0.5

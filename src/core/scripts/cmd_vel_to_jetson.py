@@ -4,8 +4,6 @@ import rospy
 from geometry_msgs.msg import Twist
 import RPi.GPIO as GPIO
 
-MAX_VEL_FWD = 1
-
 def callback(msg):
     if msg.linear.x > 0.2:
         print ("forward")

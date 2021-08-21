@@ -22,7 +22,7 @@ GPIO.setup(33, GPIO.OUT)
 motor_left = GPIO.PWM(32, 50000)
 motor_right = GPIO.PWM(33, 50000)
 
-motor_left.steart(0)
-motor_right.steart(0)
+motor_left.start(0)
+motor_right.start(0)
 
 rospy.spin()

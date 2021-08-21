@@ -1,0 +1,5 @@
+<launch>
+<node pkg="core" type="joy_to_cmd_vel.py" name="joy_to_cmd_vel"/>
+<node pkg="core" type="cmd_vel_to_jetson.py" name="cmd_vel_to_jetson" />
+<node pkg="joy" type="joy_node" name="joy_node" />
+</launch>

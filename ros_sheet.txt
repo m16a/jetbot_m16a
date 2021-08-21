@@ -1,0 +1,43 @@
+rqt_console
+rqt_graph
+rostopick echo joy
+rostopic info cmd_vel
+
+export TURTLEBOT3_MODEL=waffle
+roslaunch turtlebot3_gazebo turtlebot3_world.launch
+rosrun core joy_to_cmd_vel.py
+rosrun joy joy_node
+
+
+roslaunch jetbot_simple_gazebo jetbot_simple_empty_world.launch
+
+rostopic pub -r 10 /cmd_vel geometry_msgs/Twist  '{linear:  {x: 0.1, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.0}}'
+
+
+how turtle bot is controlled?
+    book p458. not much info
+    via includes from urdf settings
+    /opt/ros/noetic/share/turtlebot3_description/urdf/turtlebot3_waffle.gazebo.xacro
+        <gazebo>
+            <plugin name="turtlebot3_waffle_controller" filename="libgazebo_ros_diff_drive.so">
+            <commandTopic>cmd_vel</commandTopic>
+            <odometryTopic>odom</odometryTopic>
+            <odometryFrame>odom</odometryFrame>
+            <odometrySource>world</odometrySource>
+            <publishOdomTF>true</publishOdomTF>
+            <robotBaseFrame>base_footprint</robotBaseFrame>
+            <publishWheelTF>false</publishWheelTF>
+            <publishTf>true</publishTf>
+            <publishWheelJointState>true</publishWheelJointState>
+            <legacyMode>false</legacyMode>
+            <updateRate>30</updateRate>
+            <leftJoint>wheel_left_joint</leftJoint>
+            <rightJoint>wheel_right_joint</rightJoint>
+            <wheelSeparation>0.287</wheelSeparation>
+            <wheelDiameter>0.066</wheelDiameter>
+            <wheelAcceleration>1</wheelAcceleration>
+            <wheelTorque>10</wheelTorque>
+            <rosDebugLevel>na</rosDebugLevel>
+            </plugin>
+        </gazebo>
+

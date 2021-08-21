@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>jetbot_description_simple</name>
+  <version>1.0.0</version>
+  <description>
+    Simple 3D model of the JetBot simulation and visualization. Just moving via cmd_vel
+  </description>
+  <license>to_add</license>
+  <author email="mshvorak@gmail.com">Mykhailo Shvorak</author>
+  <maintainer email="mshvorak@gmail.com">Mykhailo Shvorak</maintainer>
+  <url type="website">provide_site</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>urdf</depend>
+  <depend>xacro</depend>
+</package>

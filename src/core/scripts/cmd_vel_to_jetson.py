@@ -1,13 +1,16 @@
 #!/usr/bin/env python
+from home.m16a.Desktop.ros.jetbot_m16a.src.core.scripts.joy_to_cmd_vel import MAX_VEL_FWD
 import rospy
 from geometry_msgs.msg import Twist
 import RPi.GPIO as GPIO
 
+MAX_VEL_FWD = 1
+
 def callback(msg):
     if msg.linear.x > 0.2:
         print ("forward")
-        motor_left.ChangeDutyCycle(70)
-        motor_right.ChangeDutyCycle(70)
+        motor_left.ChangeDutyCycle(100 * msg.linear.x)
+        motor_right.ChangeDutyCycle(100 * msg.linear.x)
     else:
         motor_left.ChangeDutyCycle(0)
         motor_right.ChangeDutyCycle(0)

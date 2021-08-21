@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>pack1</name>
+  <name>core</name>
   <version>0.0.0</version>
   <description>The pack1 package</description>
 

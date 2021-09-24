@@ -1,0 +1,1 @@
+catkin_make -DCATKIN_BLACKLIST_PACKAGES="jetbot_description_simple;jetbot_simple_gazebo"

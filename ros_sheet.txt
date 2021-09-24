@@ -1,6 +1,6 @@
 rqt_console
 rqt_graph
-rostopick echo joy
+rostopic echo joy
 rostopic info cmd_vel
 
 export TURTLEBOT3_MODEL=waffle

@@ -48,11 +48,11 @@ class MotorDriver():
 def on_cmd_vel(msg):
 	if msg.linear.x > 0.2:
 		rospy.loginfo("m16a")
-		Motor.MotorRun(0, 'forward', 100)
-		Motor.MotorRun(1, 'forward', 100)
+		Motor.MotorRun(0, 'forward', 100 * msg.linear.x)
+		Motor.MotorRun(1, 'forward', 100 * msg.linear.x)
 	elif msg.linear.x < -0.2:
-		Motor.MotorRun(0, 'backward', 75)
-		Motor.MotorRun(1, 'backward', 75)
+		Motor.MotorRun(0, 'backward', -100 * msg.linear.x)
+		Motor.MotorRun(1, 'backward', -100 * msg.linear.x)
 	else:
 		rospy.loginfo("m16a stop")
 		Motor.MotorStop(0)

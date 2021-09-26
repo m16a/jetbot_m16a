@@ -10,6 +10,9 @@ Dir = [
     'backward',
 ]
 
+start_pwm = 0.5
+pwn_len = 0
+
 class MotorDriver():
     def __init__(self):
         self.PWMA = 0
@@ -46,13 +49,13 @@ class MotorDriver():
             pwm.setDutycycle(self.PWMB, 0)
 
 def on_cmd_vel(msg):
-	if msg.linear.x > 0.2:
+	if msg.linear.x > 0.1:
 		rospy.loginfo("m16a")
-		Motor.MotorRun(0, 'forward', 100 * msg.linear.x)
-		Motor.MotorRun(1, 'forward', 100 * msg.linear.x)
-	elif msg.linear.x < -0.2:
-		Motor.MotorRun(0, 'backward', -100 * msg.linear.x)
-		Motor.MotorRun(1, 'backward', -100 * msg.linear.x)
+		Motor.MotorRun(0, 'forward', 100 * min(1, msg.linear.x + start_pwm))
+		Motor.MotorRun(1, 'forward', 100 * min(1, msg.linear.x + start_pwm))
+	elif msg.linear.x < -0.1:
+		Motor.MotorRun(0, 'backward', 100 * min(1, -msg.linear.x + start_pwm))
+		Motor.MotorRun(1, 'backward', 100 * min(1, -msg.linear.x + start_pwm))
 	else:
 		rospy.loginfo("m16a stop")
 		Motor.MotorStop(0)

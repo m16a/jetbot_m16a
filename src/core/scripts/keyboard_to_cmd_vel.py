@@ -14,7 +14,7 @@ max_lin_vel = 1
 lin_acc = 0.05
 lin_decay = 0.05
 
-max_ang_vel = 1
+max_ang_vel = 0.25
 ang_acc = 0.05
 ang_decay = 0.05
 
@@ -47,7 +47,7 @@ def updateCurrentMove():
 		prev = current_move.linear.x
 		current_move.linear.x = current_move.linear.x - dirr * lin_decay
 		#print(prev, ' ', current_move.linear.x)
-		if prev * current_move.linear.x < 0.0:
+		if prev * current_move.linear.x <= 0.0:
 			current_move.linear.x = 0.0
 		#rospy.loginfo("stopping")
 	else:
@@ -61,14 +61,14 @@ def updateCurrentMove():
 		prev = current_move.angular.z
 		current_move.angular.z = current_move.angular.z - dirr * ang_decay
 		#print(prev, ' ', current_move.linear.x)
-		if prev * current_move.angular.z < 0.0:
+		if prev * current_move.angular.z <= 0.0:
 			current_move.angular.z = 0.0
 		#rospy.loginfo("stopping")
 	else:
 		if pressedKey[2] == 1:
-			current_move.angular.z = min(current_move.angular.z + ang_acc, max_ang_vel)
-		elif pressedKey[3] == 1:
 			current_move.angular.z = max(current_move.angular.z - ang_acc, -max_ang_vel)
+		elif pressedKey[3] == 1:
+			current_move.angular.z = min(current_move.angular.z + ang_acc, +max_ang_vel)
 
 
 	

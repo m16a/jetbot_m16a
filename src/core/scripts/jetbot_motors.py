@@ -13,6 +13,20 @@ Dir = [
 start_pwm = 0.5
 pwn_len = 0
 
+def translate(value, leftMin, leftMax, rightMin, rightMax):
+    # Figure out how 'wide' each range is
+    leftSpan = leftMax - leftMin
+    rightSpan = rightMax - rightMin
+
+    # Convert the left range into a 0-1 range (float)
+    valueScaled = float(value - leftMin) / float(leftSpan)
+
+    # Convert the 0-1 range into a value in the right range.
+    return rightMin + (valueScaled * rightSpan)
+
+def clamp(n, minn, maxn):
+    return max(min(maxn, n), minn)
+
 class MotorDriver():
     def __init__(self):
         self.PWMA = 0
@@ -50,18 +64,28 @@ class MotorDriver():
 
 def on_cmd_vel(msg):
     vel_left = msg.linear.x + msg.angular.z
+    vel_left = clamp(vel_left, -1.0, 1.0)
     vel_right = msg.linear.x - msg.angular.z
+    vel_right = clamp(vel_right, -1.0, 1.0)
 
     if abs(vel_left) < 0.1:
         rospy.loginfo("m16a left stop")
         Motor.MotorStop(0)
+    else:
+	value = 100 * min(1, translate(abs(vel_left), 0, 1, 0, 0.5) + start_pwm)
+        rospy.loginfo("left {} {}".format('f' if vel_left > 0 else 'b', value))
+        Motor.MotorRun(0, 'forward' if vel_left  > 0.0 else 'backward', value)
 
     if abs(vel_right) < 0.1:
         rospy.loginfo("m16a right stop")
         Motor.MotorStop(1)
+    else:
+	value = 100 * min(1, translate(abs(vel_right), 0, 1, 0, 0.5) + start_pwm)
+        rospy.loginfo("right {} {}".format('f' if vel_right > 0 else 'b', value))
+        Motor.MotorRun(1, 'forward' if vel_right > 0.0 else 'backward', value)
+	
 
-    Motor.MotorRun(0, 'forward' if vel_left  > 0.0 else 'backward', 100 * min(1, abs(vel_left) + start_pwm))
-    Motor.MotorRun(1, 'forward' if vel_right > 0.0 else 'backward', 100 * min(1, abs(vel_right) + start_pwm))
+    
 
 try:
     pwm = PCA9685(0x40, debug=False)

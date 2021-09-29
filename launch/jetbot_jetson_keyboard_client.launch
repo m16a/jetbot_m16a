@@ -1,0 +1,3 @@
+<launch>
+<node pkg="core" type="keyboard_to_cmd_vel.py" name="kbrd_to_cmd_vel"/>
+</launch>

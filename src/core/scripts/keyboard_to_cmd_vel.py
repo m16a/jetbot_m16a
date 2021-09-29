@@ -1,41 +1,41 @@
 #!/usr/bin/env python
 import rospy
+
+#import time
+
+import pygame
+from pygame.locals import *
+
 from geometry_msgs.msg import Twist
-
-import time
-import sys
-import select
-import tty
-import termios
-
 
 cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
 
 max_vel_fwd = 1
-acc = 0.01;
-decay = 0.1;
+acc = 0.05;
+decay = 0.05;
 pressedKeyEmpty = [0,0,0,0] # "wsad"
 pressedKey = pressedKeyEmpty
 current_move = Twist()
 
-def handle_key(key):
+def handle_key(keys):
 	global pressedKey
-	if key == 'w': #W
+	if keys[K_w]:
 		pressedKey[0] = 1;
-	if key == 's': #S
+	if keys[K_s]:
 		pressedKey[1] = 1;
-	if key == 'a': #A
+	if keys[K_a]:
 		pressedKey[2] = 1;
-	if key == 'd': #D
+	if keys[K_d]:
 		pressedKey[3] = 1;		
 	
-	#print("handle key ", key)
+	#if (sum(pressedKey) != 0):
+	#	print("handle key ")
 
 
 def updateCurrentMove():
 	global pressedKey
 	global current_move
-	#print("u")
+	print("u")
 	if pressedKey[0] == 0 and pressedKey[1] == 0 and current_move.linear.x != 0.0:
 		dirr = 1.0 if current_move.linear.x > 0 else -1.0
 		prev = current_move.linear.x;
@@ -54,32 +54,39 @@ def updateCurrentMove():
 	#rospy.loginfo(pressedKey)
 	pressedKey = [0,0,0,0]
 
-def isData():
-    return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
-
-old_settings = termios.tcgetattr(sys.stdin)
-
-
 rospy.init_node('keyboard_to_cmd_vel')
-#rate = rospy.Rate(10)#try removing this line ans see what happens
-
-tty.setcbreak(sys.stdin.fileno())
-try:
-	while not rospy.is_shutdown():
-		updateCurrentMove()
-		cmd_vel_pub.publish(current_move)
-		#print(current_move)		
-		if isData():
-			c = sys.stdin.read(1)
-			#print(c)
-			handle_key(c)
-			if c == '\x1b':         # x1b is ESC
-				break
-
-#			time.sleep(0.01)
-		
-finally:
-    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 
 
+def display(str):
+    text = font.render(str, True, (255, 255, 255), (159, 182, 205))
+    textRect = text.get_rect()
+    textRect.centerx = screen.get_rect().centerx
+    textRect.centery = screen.get_rect().centery
 
+    screen.blit(text, textRect)
+    pygame.display.update()
+
+pygame.init()
+screen = pygame.display.set_mode( (640,480) )
+pygame.display.set_caption('Python numbers')
+screen.fill((159, 182, 205))
+rate = rospy.Rate(30)
+
+font = pygame.font.Font(None, 17)
+
+num = 0
+done = False
+while not rospy.is_shutdown():
+	pygame.event.pump()
+	keys = pygame.key.get_pressed()
+	if keys[K_ESCAPE]:
+		handle_key(keys)
+		break
+
+	handle_key(keys)
+	updateCurrentMove()
+	cmd_vel_pub.publish(current_move)
+	display( str(num) )
+	num += 1
+	rate.sleep()
+	#print(num)

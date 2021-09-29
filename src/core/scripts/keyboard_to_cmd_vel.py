@@ -10,9 +10,15 @@ from geometry_msgs.msg import Twist
 
 cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
 
-max_vel_fwd = 1
-acc = 0.05;
-decay = 0.05;
+max_lin_vel = 1
+lin_acc = 0.05
+lin_decay = 0.05
+
+max_ang_vel = 1
+ang_acc = 0.05
+ang_decay = 0.05
+
+
 pressedKeyEmpty = [0,0,0,0] # "wsad"
 pressedKey = pressedKeyEmpty
 current_move = Twist()
@@ -20,13 +26,13 @@ current_move = Twist()
 def handle_key(keys):
 	global pressedKey
 	if keys[K_w]:
-		pressedKey[0] = 1;
+		pressedKey[0] = 1
 	if keys[K_s]:
-		pressedKey[1] = 1;
+		pressedKey[1] = 1
 	if keys[K_a]:
-		pressedKey[2] = 1;
+		pressedKey[2] = 1
 	if keys[K_d]:
-		pressedKey[3] = 1;		
+		pressedKey[3] = 1
 	
 	#if (sum(pressedKey) != 0):
 	#	print("handle key ")
@@ -35,22 +41,37 @@ def handle_key(keys):
 def updateCurrentMove():
 	global pressedKey
 	global current_move
-	print("u")
-	if pressedKey[0] == 0 and pressedKey[1] == 0 and current_move.linear.x != 0.0:
+	#print("u")
+	if pressedKey[0] == 0 and pressedKey[1] == 0:
 		dirr = 1.0 if current_move.linear.x > 0 else -1.0
-		prev = current_move.linear.x;
-		current_move.linear.x = current_move.linear.x - dirr * decay
+		prev = current_move.linear.x
+		current_move.linear.x = current_move.linear.x - dirr * lin_decay
 		#print(prev, ' ', current_move.linear.x)
 		if prev * current_move.linear.x < 0.0:
 			current_move.linear.x = 0.0
 		#rospy.loginfo("stopping")
-
 	else:
-
 		if pressedKey[0] == 1:
-			current_move.linear.x = min(current_move.linear.x + acc, max_vel_fwd);
+			current_move.linear.x = min(current_move.linear.x + lin_acc, max_lin_vel)
 		elif pressedKey[1] == 1:
-			current_move.linear.x = max(current_move.linear.x - acc, -max_vel_fwd);
+			current_move.linear.x = max(current_move.linear.x - lin_acc, -max_lin_vel)
+	
+	if pressedKey[2] == 0 and pressedKey[3] == 0:
+		dirr = 1.0 if current_move.angular.z > 0 else -1.0
+		prev = current_move.angular.z
+		current_move.angular.z = current_move.angular.z - dirr * ang_decay
+		#print(prev, ' ', current_move.linear.x)
+		if prev * current_move.angular.z < 0.0:
+			current_move.angular.z = 0.0
+		#rospy.loginfo("stopping")
+	else:
+		if pressedKey[2] == 1:
+			current_move.angular.z = min(current_move.angular.z + ang_acc, max_ang_vel)
+		elif pressedKey[3] == 1:
+			current_move.angular.z = max(current_move.angular.z - ang_acc, -max_ang_vel)
+
+
+	
 	#rospy.loginfo(pressedKey)
 	pressedKey = [0,0,0,0]
 
@@ -90,3 +111,10 @@ while not rospy.is_shutdown():
 	num += 1
 	rate.sleep()
 	#print(num)
+
+
+
+'''
+if left pure
+	left forward/right backward
+'''

@@ -49,17 +49,21 @@ class MotorDriver():
             pwm.setDutycycle(self.PWMB, 0)
 
 def on_cmd_vel(msg):
-	if msg.linear.x > 0.1:
-		rospy.loginfo("m16a")
-		Motor.MotorRun(0, 'forward', 100 * min(1, msg.linear.x + start_pwm))
-		Motor.MotorRun(1, 'forward', 100 * min(1, msg.linear.x + start_pwm))
-	elif msg.linear.x < -0.1:
-		Motor.MotorRun(0, 'backward', 100 * min(1, -msg.linear.x + start_pwm))
-		Motor.MotorRun(1, 'backward', 100 * min(1, -msg.linear.x + start_pwm))
-	else:
-		rospy.loginfo("m16a stop")
+    vel_left = msg.linear.x + msg.angular.z
+    vel_right = msg.linear.x - msg.angular.z
+
+    if abs(vel_left) < 0.1:
+		rospy.loginfo("m16a left stop")
 		Motor.MotorStop(0)
+
+    if abs(vel_right) < 0.1:
+		rospy.loginfo("m16a right stop")
 		Motor.MotorStop(1)
+    
+
+     
+	Motor.MotorRun(0, 'forward' if vel_left  > 0.0 else 'backward', 100 * min(1, abs(vel_left) + start_pwm))
+	Motor.MotorRun(1, 'forward' if vel_right > 0.0 else 'backward', 100 * min(1, abs(vel_right) + start_pwm))
 
 try:
 	pwm = PCA9685(0x40, debug=False)
